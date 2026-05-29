@@ -43,4 +43,4 @@ for senal in senales:
             "ffmpeg", "-y", "-i", out_opus, rec_opus
         ], check=True)
 
-print("✅ Codificación completa. Archivos guardados en carpeta 'salida/'")
+print("Codificación completa. Archivos guardados en carpeta 'salida/'")
