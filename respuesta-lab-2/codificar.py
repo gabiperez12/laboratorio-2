@@ -3,8 +3,10 @@ import subprocess
 import os
 
 IN_DIR = "senales"   # Carpeta con las señales originales descargadas
-OUT_DIR = "salida"   # Carpeta donde se guardarán los archivos codificados y decodificados
-os.makedirs(OUT_DIR, exist_ok=True)
+COD_DIR = os.path.join("salidas", "codificadas")    # Archivos comprimidos
+DEC_DIR = os.path.join("salidas", "decodificadas")  # WAV decodificados para medir
+os.makedirs(COD_DIR, exist_ok=True)
+os.makedirs(DEC_DIR, exist_ok=True)
 
 bitrates = [24, 64, 128]  # Bitrates de prueba en kbps
 senales = ["music_tonal.wav", "voz.wav", "transitorios.wav"]
@@ -18,29 +20,29 @@ for senal in senales:
 
     for br in bitrates:
         # Codificación AAC usando el encoder nativo de FFmpeg
-        out_aac = os.path.join(OUT_DIR, f"{nombre}_aac_{br}.m4a")
+        out_aac = os.path.join(COD_DIR, f"{nombre}_aac_{br}.m4a")
         subprocess.run([
             "ffmpeg", "-y", "-i", os.path.join(IN_DIR, senal),
             "-c:a", "aac", "-b:a", f"{br}k", out_aac
         ], check=True)
 
         # Decodificación a WAV para análisis objetivo
-        rec_aac = os.path.join(OUT_DIR, f"{nombre}_aac_{br}.wav")
+        rec_aac = os.path.join(DEC_DIR, f"{nombre}_aac_{br}.wav")
         subprocess.run([
             "ffmpeg", "-y", "-i", out_aac, rec_aac
         ], check=True)
 
         # Codificación Opus usando libopus
-        out_opus = os.path.join(OUT_DIR, f"{nombre}_opus_{br}.opus")
+        out_opus = os.path.join(COD_DIR, f"{nombre}_opus_{br}.opus")
         subprocess.run([
             "ffmpeg", "-y", "-i", os.path.join(IN_DIR, senal),
             "-c:a", "libopus", "-b:a", f"{br}k", out_opus
         ], check=True)
 
         # Decodificación a WAV para análisis objetivo
-        rec_opus = os.path.join(OUT_DIR, f"{nombre}_opus_{br}.wav")
+        rec_opus = os.path.join(DEC_DIR, f"{nombre}_opus_{br}.wav")
         subprocess.run([
             "ffmpeg", "-y", "-i", out_opus, rec_opus
         ], check=True)
 
-print("Codificación completa. Archivos guardados en carpeta 'salida/'")
+print("Codificación completa. Archivos guardados en 'salidas/codificadas' y 'salidas/decodificadas'")
